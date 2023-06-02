@@ -18,7 +18,7 @@
             Numero de empleado: {{ empleado.idEmpleado }}
           </p>
           <p class="text-sm text-black/60">
-            Numero de empleado: {{ empleado.idActivo }}
+            Numero de activo: {{ empleado.idActivo }}
           </p>
         </div>
         <div class="px-3 text-sm text-black/60 mb-2">
