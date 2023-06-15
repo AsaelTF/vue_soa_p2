@@ -134,7 +134,9 @@ export default {
       .catch((error) => {
         console.log(error);
       })
-      .finally(() => {});
+      .finally(() => {
+       
+      });
   },
   methods: {
     cambiarActivo(activo_seleccionado) {
@@ -162,7 +164,9 @@ export default {
       .catch((error) => {
         console.log(error);
       })
-      .finally(() => {});
+      .finally(() => {
+        location.reload()
+      });
     },
     test(){
       console.log(this.data)

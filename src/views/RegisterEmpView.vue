@@ -141,7 +141,9 @@ export default {
       .catch((error) => {
         console.log(error);
       })
-      .finally(() => {});
+      .finally(() => {
+        location.reload()
+      });
     }
   },
 };
