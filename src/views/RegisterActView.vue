@@ -60,23 +60,25 @@ export default {
         descripcion: "",
         estatus: false,
       },
+      arrayActivo :null
     };
   },
   methods: {
     postActivo() {
-
-		const xmlData= `<?xml version="1.0" encoding="utf-8"?>
+      var nombre = this.nombre;
+      var descripcion = this.descripcion;
+      var  xmlData = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <RegistrarActivo xmlns="http://tempuri.org/">
-      <Nombre>`${this.nombre}`</Nombre>
-      <Descripcion>`${this.descripcion}`</Descripcion>
+      <Nombre>${this.data.nombre}</Nombre>
+      <Descripcion>${this.data.descripcion}</Descripcion>
       <Estatus>false</Estatus>
     </RegistrarActivo>
   </soap:Body>
 </soap:Envelope>
 `;
-
+      console.log(xmlData);
       axios
         .post("https://soa-wcf.azurewebsites.net/Service.svc", xmlData, {
           headers: {
@@ -88,8 +90,9 @@ export default {
         .then((response) => {
           //Almacenamos el string de la respuesta en this.arrayActivo
           this.arrayActivo = response.data;
+          console.log(this.arrayActivo)
           //Creamos una variable const que contentra el regex para descartar el xml
-          const jsonRegex = /\[\{.*?\}\]/s;
+          const jsonRegex = /\{.*?\}/s;
           //Ejecturamos la funcion match para que nos devuelva lo que se encuentra dentro de [{}]
           const existeJson = this.arrayActivo.match(jsonRegex);
           //Si es verdadero, es que existe el json y hacemos la funcion
