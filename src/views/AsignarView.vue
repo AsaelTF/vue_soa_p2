@@ -83,7 +83,7 @@
     </div>
     <div class="mb-16">
       <button
-        @click="postActivoEmpleado(), test()"
+        @click="postActivoEmpleado(),test()"
         class="border-2 border-sky-600 text-sky-600 tracking-wide text-sm px-4 py-2 w-full rounded hover:bg-sky-600 hover:text-white transition ease-in-out duration-150"
       >
         Confirmar Asignación
@@ -104,6 +104,7 @@ export default {
       arrayEmpleados: [],
       arrayActivos: [],
       fechaActual: "",
+      correo: "",
       data: {
         identificadorEmpleado: null,
         identificadoActivo: null,
@@ -208,7 +209,9 @@ export default {
       .catch((error) => {
         console.log(error);
       })
-      .finally(() => {});
+      .finally(() => {
+        
+      });
   },
   methods: {
     cambiarActivo(activo_seleccionado) {
@@ -217,11 +220,13 @@ export default {
         (activo) => activo.id === activo_seleccionado
       );
     },
-    cambiarEmpleado(empleado_seleccionado) {
-      this.empleado_seleccionado = empleado_seleccionado;
-      this.nombre_empleado_seleccionado = this.arrayEmpleados.find(
-        (empleado) => empleado.id === empleado_seleccionado
-      );
+    saberEmpleado() {
+      for (let i = 0; i < this.arrayEmpleados.length; i++) {
+        if (this.arrayEmpleados[i].id == this.data.identificadorEmpleado) {
+          console.log(this.arrayEmpleados[i].correo);
+          this.correo = this.arrayEmpleados[i].correo;
+        }
+      }
     },
     postActivoEmpleado() {
       this.data.fechaAsignacion = new Date().toISOString().split("T")[0];
@@ -241,7 +246,7 @@ export default {
 </soap:Envelope>
 `;
 
-console.log(xmlDataActivoEmpleado)
+      console.log(xmlDataActivoEmpleado);
       axios
         .post(
           "https://soa-wcf.azurewebsites.net/Service.svc",
@@ -261,11 +266,44 @@ console.log(xmlDataActivoEmpleado)
           console.log(error);
         })
         .finally(() => {
-          //window.location.reload();
+          
         });
     },
     test() {
-      console.log(this.data);
+      for (let i = 0; i < this.arrayEmpleados.length; i++) {
+        if (this.arrayEmpleados[i].id == this.data.identificadorEmpleado) {
+          this.correo = this.arrayEmpleados[i].correo;
+        }
+      }
+      console.log(this.correo);
+      var xmlCorreo = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <AvisarEmpleado xmlns="http://tempuri.org/">
+      <mensaje>Tu entrega del activo es para el ${this.data.fechaEntrega}</mensaje>
+      <correo>${this.correo}</correo>
+    </AvisarEmpleado>
+  </soap:Body>
+</soap:Envelope>
+
+`;
+      axios
+        .post("https://soa-wcf.azurewebsites.net/Service.svc", xmlCorreo, {
+          headers: {
+            "Content-Type": "text/xml; charset=utf-8",
+            SOAPAction: "http://tempuri.org/IService/AvisarEmpleado",
+          },
+          maxContentLength: Infinity,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          
+        });
     },
   },
 };
