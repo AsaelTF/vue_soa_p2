@@ -2,9 +2,11 @@
   <p class="text-2xl text-center font-Roboto font-bold tracking-wide my-5">
     Empleados
   </p>
-  <CardPersona
+  <div class="min-h-screen">
+    <CardPersona
 	:arrayEmpleados="arrayEmpleados"
 	></CardPersona>
+  </div>
 </template>
 
 <script>

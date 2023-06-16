@@ -19,7 +19,7 @@
           <p class="text-sm text-black/60">CURP: {{ empleado.curp }}</p>
         </div>
         <div class="flex px-3 text-xs gap-x-2 font-medium mb-2">
-          <button :class="empleado.estatus ? 'border border-red-600 hover:bg-red-600 rounded text-red-600 hover:text-white transition ease-in-out duration-150':'cursor-text text-gray-600'" class=" p-2 tracking-[.0892857143em]">DESASIGNAR ACTIVO</button>
+          <button :class="!empleado.estatus ? 'border border-red-600 hover:bg-red-600 rounded text-red-600 hover:text-white transition ease-in-out duration-150':'cursor-text text-gray-600'" class=" p-2 tracking-[.0892857143em]">ELIMINAR EMPLEADO</button>
         </div>
       </div>
     </div>

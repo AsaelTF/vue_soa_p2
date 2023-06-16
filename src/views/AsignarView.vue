@@ -17,12 +17,18 @@
       >
         <option disabled selected>Escoja un empleado</option>
         <template v-for="(empleado, index) in arrayEmpleados">
-          <option
-          v-if="!empleado.estatus"
-          :value="empleado.id"
-        >
-          {{"ID:"+ empleado.id+ " " + empleado.nombre+" "+empleado.apellidos+", Id Empleado: "+empleado.numeroEmpleado }}
-        </option>
+          <option v-if="!empleado.estatus" :value="empleado.id">
+            {{
+              "ID:" +
+              empleado.id +
+              " " +
+              empleado.nombre +
+              " " +
+              empleado.apellidos +
+              ", Id Empleado: " +
+              empleado.numeroEmpleado
+            }}
+          </option>
         </template>
       </select>
     </div>
@@ -40,40 +46,46 @@
       >
         <option disabled selected>Escoja un activo</option>
         <template v-for="(activo, index) in arrayActivos">
-          <option :value="activo.id" v-if="!activo.estatus">
-          {{"ID:"+ activo.id+ " " + activo.nombre +", Descripción: "+activo.descripcion}}
-        </option>
+          <option :value="activo.Id" v-if="!activo.Estatus">
+            {{
+              "ID:" +
+              activo.Id +
+              " " +
+              activo.Nombre +
+              ", Descripción: " +
+              activo.Descripcion
+            }}
+          </option>
         </template>
       </select>
     </div>
     <div class="flex flex-col gap-y-10 mb-16">
-      <p>
-        ID: Empleado seleccionado: {{ data.identificadorEmpleado }}
-      </p>
-      <p>
-        ID: Activo seleccionado: {{ data.identificadoActivo}}
-      </p>
+      <p>ID: Empleado seleccionado: {{ data.identificadorEmpleado }}</p>
+      <p>ID: Activo seleccionado: {{ data.identificadoActivo }}</p>
     </div>
     <div class="flex flex-wrap -mx-3 mb-6">
-          <div class="w-full px-3">
-            <label
-              class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              for="grid-password"
-            >
-              Fecha de entrega
-            </label>
-            <input
-            v-model="data.fechaEntrega"
-              class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="grid-password"
-              type="date"
-              placeholder="DOE"
-              :max="fecha"
-            />
-          </div>
-        </div>
+      <div class="w-full px-3">
+        <label
+          class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+          for="grid-password"
+        >
+          Fecha de entrega
+        </label>
+        <input
+          v-model="data.fechaEntrega"
+          class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          id="grid-password"
+          type="date"
+          placeholder="DOE"
+          :max="fecha"
+        />
+      </div>
+    </div>
     <div class="mb-16">
-      <button @click="postActivoEmpleado(),test()" class="border-2 border-sky-600 text-sky-600 tracking-wide text-sm px-4 py-2 w-full rounded hover:bg-sky-600 hover:text-white transition ease-in-out duration-150">
+      <button
+        @click="postActivoEmpleado(), test()"
+        class="border-2 border-sky-600 text-sky-600 tracking-wide text-sm px-4 py-2 w-full rounded hover:bg-sky-600 hover:text-white transition ease-in-out duration-150"
+      >
         Confirmar Asignación
       </button>
     </div>
@@ -81,7 +93,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
   data() {
     return {
@@ -90,53 +102,113 @@ export default {
       nombre_empleado_seleccionado: "Ninguno",
       nombre_activo_seleccionado: "Ninguno",
       arrayEmpleados: [],
-      arrayActivos:[],
-      fechaActual :"",
-      data:{
-        identificadorEmpleado:null,
-        identificadoActivo:null,
-        fechaAsignacion:"",
-        fechaLiberacion:"",
-        fechaEntrega:""
-      }
+      arrayActivos: [],
+      fechaActual: "",
+      data: {
+        identificadorEmpleado: null,
+        identificadoActivo: null,
+        fechaAsignacion: "",
+        fechaLiberacion: "",
+        fechaEntrega: "",
+      },
+      xmlDataActivos: `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <ObtenerActivos xmlns="http://tempuri.org/"/>
+  </soap:Body>
+</soap:Envelope>
+`,
+      xmlDataEmpleados: `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <ObtenerEmpleados xmlns="http://tempuri.org/"/>
+  </soap:Body>
+</soap:Envelope>
+`,
     };
   },
   computed: {
     fecha() {
-      this.fechaActual = new Date()
+      this.fechaActual = new Date();
       var dt = new Date();
-      dt.setDate(dt.getDate() + 2)
+      dt.setDate(dt.getDate() + 2);
       this.fechaActual = dt;
-      return this.fechaActual.toISOString().split('T')[0];
-    }
+      return this.fechaActual.toISOString().split("T")[0];
+    },
   },
   mounted() {
     axios
-      //.get('http://172.16.128.41:3000/api/v1/viper/getAll')
-      .get("https://localhost:7083/Personas")
+      .post(
+        "https://soa-wcf.azurewebsites.net/Service.svc",
+        this.xmlDataEmpleados,
+        {
+          headers: {
+            "Content-Type": "text/xml; charset=utf-8",
+            SOAPAction: "http://tempuri.org/IService/ObtenerEmpleados",
+          },
+          maxContentLength: Infinity,
+        }
+      )
       .then((response) => {
+        //Almacenamos el string de la respuesta en this.arrayEmpleados
         this.arrayEmpleados = response.data;
-        console.log(this.arrayEmpleados);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-      });
+        //Creamos una variable const que contentra el regex para descartar el xml
+        const jsonRegex = /\[\{.*?\}\]/s;
+        //Ejecturamos la funcion match para que nos devuelva lo que se encuentra dentro de [{}]
+        const existeJson = this.arrayEmpleados.match(jsonRegex);
+        //Si es verdadero, es que existe el json y hacemos la funcion
+        if (existeJson) {
+          //Guardamos el valor de match en jsonResult
+          const jsonResult = existeJson[0];
+          //Convertimos nuevamente a JSON y lo guardamos en this.arrayEmpleados
+          this.arrayEmpleados = JSON.parse(jsonResult);
 
-    axios
-      //.get('http://172.16.128.41:3000/api/v1/viper/getAll')
-      .get("https://localhost:7083/Activo")
-      .then((response) => {
-        this.arrayActivos = response.data;
-        console.log(this.arrayActivos);
+          console.log(this.arrayEmpleados);
+        } else {
+          console.log("No se encontró la cadena JSON en la respuesta.");
+        }
       })
       .catch((error) => {
         console.log(error);
       })
-      .finally(() => {
-       
-      });
+      .finally(() => {});
+
+    /// PARA LOS ACTIVOS
+    axios
+      .post(
+        "https://soa-wcf.azurewebsites.net/Service.svc",
+        this.xmlDataActivos,
+        {
+          headers: {
+            "Content-Type": "text/xml; charset=utf-8",
+            SOAPAction: "http://tempuri.org/IService/ObtenerActivos",
+          },
+          maxContentLength: Infinity,
+        }
+      )
+      .then((response) => {
+        //Almacenamos el string de la respuesta en this.arrayActivos
+        this.arrayActivos = response.data;
+        //Creamos una variable const que contentra el regex para descartar el xml
+        const jsonRegex = /\[\{.*?\}\]/s;
+        //Ejecturamos la funcion match para que nos devuelva lo que se encuentra dentro de [{}]
+        const existeJson = this.arrayActivos.match(jsonRegex);
+        //Si es verdadero, es que existe el json y hacemos la funcion
+        if (existeJson) {
+          //Guardamos el valor de match en jsonResult
+          const jsonResult = existeJson[0];
+          //Convertimos nuevamente a JSON y lo guardamos en this.arrayActivos
+          this.arrayActivos = JSON.parse(jsonResult);
+
+          console.log(this.arrayActivos);
+        } else {
+          console.log("No se encontró la cadena JSON en la respuesta.");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {});
   },
   methods: {
     cambiarActivo(activo_seleccionado) {
@@ -151,26 +223,50 @@ export default {
         (empleado) => empleado.id === empleado_seleccionado
       );
     },
-    postActivoEmpleado(){
-      this.data.fechaAsignacion = new Date().toISOString().split('T')[0]
-      this.data.fechaLiberacion = new Date().toISOString().split('T')[0]
+    postActivoEmpleado() {
+      this.data.fechaAsignacion = new Date().toISOString().split("T")[0];
+      this.data.fechaLiberacion = new Date().toISOString().split("T")[0];
+
+      var xmlDataActivoEmpleado = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RegistrarActivoEmpledao xmlns="http://tempuri.org/">
+      <identificadorEmpleado>${this.data.identificadorEmpleado}</identificadorEmpleado>
+      <identificadoActivo>${this.data.identificadoActivo}</identificadoActivo>
+      <fechaAsignacion>${this.data.fechaAsignacion}</fechaAsignacion>
+      <fechaLiberacion>${this.data.fechaLiberacion}</fechaLiberacion>
+      <fechaEntrega>${this.data.fechaEntrega}</fechaEntrega>
+    </RegistrarActivoEmpledao>
+  </soap:Body>
+</soap:Envelope>
+`;
+
+console.log(xmlDataActivoEmpleado)
       axios
-      //.get('http://172.16.128.41:3000/api/v1/viper/getAll')
-      .post("https://localhost:7083/ActivoEmpleado", this.data)
-      .then((response) => {
-        this.response = response.data;
-        console.log(this.response);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        location.reload()
-      });
+        .post(
+          "https://soa-wcf.azurewebsites.net/Service.svc",
+          xmlDataActivoEmpleado,
+          {
+            headers: {
+              "Content-Type": "text/xml; charset=utf-8",
+              SOAPAction: "http://tempuri.org/IService/RegistrarActivoEmpledao",
+            },
+            maxContentLength: Infinity,
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          //window.location.reload();
+        });
     },
-    test(){
-      console.log(this.data)
-    }
+    test() {
+      console.log(this.data);
+    },
   },
 };
 </script>

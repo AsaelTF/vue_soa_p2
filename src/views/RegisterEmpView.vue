@@ -180,7 +180,9 @@ export default {
         .catch((error) => {
           console.log(error);
         })
-        .finally(() => {});
+        .finally(() => {
+          window.location.reload();
+        });
     }
   },
 };
