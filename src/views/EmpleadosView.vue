@@ -52,6 +52,7 @@ export default {
 
           console.log(this.arrayEmpleados);
         } else {
+
           console.log("No se encontró la cadena JSON en la respuesta.");
         }
       })

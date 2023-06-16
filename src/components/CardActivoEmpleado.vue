@@ -64,42 +64,26 @@ export default {
       var xmlData = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <RegistrarActivo xmlns="http://tempuri.org/">
-      <Nombre>${this.data.nombre}</Nombre>
-      <Descripcion>${this.data.descripcion}</Descripcion>
-      <Estatus>false</Estatus>
-    </RegistrarActivo>
+    <EliminarActivoEmpleado xmlns="http://tempuri.org/">
+      <id>${id}</id>
+    </EliminarActivoEmpleado>
   </soap:Body>
 </soap:Envelope>
 `;
-
+console.log(xmlData)
       axios
         .post("https://soa-wcf.azurewebsites.net/Service.svc", xmlData, {
           headers: {
             "Content-Type": "text/xml; charset=utf-8",
-            SOAPAction: "http://tempuri.org/IService/RegistrarActivo",
+            SOAPAction: "http://tempuri.org/IService/EliminarActivoEmpleado",
           },
           maxContentLength: Infinity,
         })
         .then((response) => {
-          //Almacenamos el string de la respuesta en this.arrayActivo
+
           this.arrayActivo = response.data;
           console.log(this.arrayActivo);
-          //Creamos una variable const que contentra el regex para descartar el xml
-          const jsonRegex = /\{.*?\}/s;
-          //Ejecturamos la funcion match para que nos devuelva lo que se encuentra dentro de [{}]
-          const existeJson = this.arrayActivo.match(jsonRegex);
-          //Si es verdadero, es que existe el json y hacemos la funcion
-          if (existeJson) {
-            //Guardamos el valor de match en jsonResult
-            const jsonResult = existeJson[0];
-            //Convertimos nuevamente a JSON y lo guardamos en this.arrayActivo
-            this.arrayActivo = JSON.parse(jsonResult);
 
-            console.log(this.arrayActivo);
-          } else {
-            console.log("No se encontró la cadena JSON en la respuesta.");
-          }
         })
         .catch((error) => {
           console.log(error);

@@ -49,6 +49,7 @@ export default{
 
           console.log(this.arrayActivo);
         } else {
+          this.arrayActivo = []
           console.log("No se encontró la cadena JSON en la respuesta.");
         }
       })

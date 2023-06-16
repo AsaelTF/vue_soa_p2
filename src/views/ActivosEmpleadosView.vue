@@ -51,6 +51,7 @@ export default {
           console.log(this.arrayActivoEmpleado);
         } else {
           console.log("No se encontró la cadena JSON en la respuesta.");
+          this.arrayActivoEmpleado = []
         }
       })
       .catch((error) => {
